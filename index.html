@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notification Demo</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    button {
+      margin-top: 10px;
+      padding: 5px 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Notification Sender</h1>
+  <p>Click the button below to grant permission for notifications.</p>
+  <button id="permissionBtn">Request Notification Permission</button>
+  
+  <div id="startSection" style="display: none;">
+    <button id="startBtn">Start Sending Notifications</button>
+    <button id="stopBtn">Stop Sending Notifications</button>
+  </div>
+
+  <script>
+    // Define your list of messages here
+    const messages = [
+      "WARNING! YOUR SYSTEM IS AT RISK SCAN NOW!",
+      "Your computer is infected with 7 viruses",
+      "This is a rotating notification.",
+      "Don't forget to take breaks!",
+      "You're doing great!"
+    ];
+
+    let currentIndex = 0;
+    let notificationInterval;
+
+    const permissionBtn = document.getElementById('permissionBtn');
+    const startSection = document.getElementById('startSection');
+    const startBtn = document.getElementById('startBtn');
+    const stopBtn = document.getElementById('stopBtn');
+
+    // Request Notification Permission
+    permissionBtn.addEventListener('click', () => {
+      if (Notification.permission === 'granted') {
+        alert('Permission already granted!');
+        startSection.style.display = 'block';
+      } else if (Notification.permission !== 'denied') {
+        Notification.requestPermission().then(permission => {
+          if (permission === 'granted') {
+            alert('Permission granted!');
+            startSection.style.display = 'block';
+          } else {
+            alert('Permission denied. Unable to send notifications.');
+          }
+        });
+      } else {
+        alert('Permission denied earlier. Please enable it manually in browser settings.');
+      }
+    });
+
+    // Start Sending Notifications
+    startBtn.addEventListener('click', () => {
+      if (notificationInterval) {
+        clearInterval(notificationInterval); // Clear any existing interval
+      }
+      notificationInterval = setInterval(() => {
+        new Notification(messages[currentIndex]);
+        currentIndex = (currentIndex + 1) % messages.length; // Cycle through the list
+      }, 2000);
+    });
+
+    // Stop Sending Notifications
+    stopBtn.addEventListener('click', () => {
+      clearInterval(notificationInterval);
+      alert('Notifications stopped.');
+    });
+  </script>
+</body>
+</html>
